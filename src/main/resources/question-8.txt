@@ -1,0 +1,46 @@
+
+1)
+Testes Unitários
+    Lógica de validação para campos obrigatórios
+    Verificação de unicidade do e-mail
+    Controle de acesso baseado em função para exclusão
+
+Testes de Integração
+    Verificam a interação entre componentes:
+    Operações no banco de dados (inserir/atualizar/excluir)
+    Endpoints da API para gerenciamento de usuários
+    Middleware de autenticação e autorização
+    Preenchimento e envio do formulário de cadastro
+    Tentativa de exclusão de usuário como admin vs não-admin
+    Atualização de informações e verificação de persistência
+
+Cenários
+  Cenários de Teste Unitário
+    Validar que nome e e-mail são obrigatórios
+    Verificar se o formato do e-mail está correto
+    Garantir que a lógica de unicidade do e-mail funciona
+    Confirmar que apenas admins podem excluir usuários
+
+  Cenários de Teste de Integração
+    Inserir um usuário e verificar entrada no banco
+    Atualizar informações e confirmar alterações
+    Tentar inserir e-mail duplicado e esperar falha
+    Excluir usuário e verificar remoção (apenas admin)
+
+
+
+@Test
+public void testEmailUnico() {
+    UserService userService = new UserService();
+
+    User usuario1 = new User("Alice", "alice@example.com", "Rua 123", "123456789");
+    userService.cadastrarUsuario(usuario1);
+
+    User usuario2 = new User("Bob", "alice@example.com", "Av. 456", "987654321");
+
+    Exception excecao = assertThrows(EmailJaExisteException.class, () -> {
+        userService.cadastrarUsuario(usuario2);
+    });
+
+    assertEquals("E-mail já está em uso", excecao.getMessage());
+}
