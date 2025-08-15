@@ -1,6 +1,6 @@
 # Anagram Generator
 
-[![Ask DeepWiki](https://devin.ai/assets/askdeepwiki.png)](https://deepwiki.com/lquartieri77/teste-nathalia)
+![Ask DeepWiki](https://devin.ai/assets/askdeepwiki.png)
 
 This project is a Spring Boot web application that generates all possible letter combinations (anagrams) from a given set of distinct letters.
 
