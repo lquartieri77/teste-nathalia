@@ -1,0 +1,24 @@
+O primeiro passo seria realizar uma análise ponta a ponta do processo, medindo os tempos de execução em cada etapa para identificar onde estão os gargalos — seja na comunicação com o banco de dados, na lógica de processamento ou na transferência via FTP.
+
+Diagnóstico de desempenho:
+
+- **Mapeamento completo do fluxo**:
+Monitorar cada etapa do batch — conexão com o FTP, leitura/gravação de arquivos, execução de queries, e lógica de negócio — para entender onde há lentidão.
+
+- **Análise de rede**:
+Se o problema estiver na comunicação com o FTP, verifico latência, perda de pacotes ou rotas ineficientes. Ferramentas como *Wireshark* ou *PingPlotter* ajudam a identificar problemas de rede.
+
+- **Consultas ao banco**:
+  - Verifico se há **consultas que podem ser otimizadas**, como joins desnecessários ou filtros mal aplicados.
+  - Avalio o uso de **índices** e **cache** para reduzir o tempo de resposta.
+  - Ferramentas como *EXPLAIN PLAN*, *pgAdmin*, *SQL Server Profiler* ou *Oracle AWR* ajudam a entender o custo das queries.
+
+- **Lógica de execução**:
+  - Analiso se há loops ou operações repetitivas que podem ser simplificadas.
+  - Verifico se o processamento pode ser **paralelizado** ou **dividido em lotes menores**.
+
+- **Eficiência na transferência de arquivos**:
+  - Avalio o uso de **compressão** para reduzir o tamanho dos arquivos.
+  - Verifico se o FTP pode ser substituído por protocolos mais rápidos, como SFTP com aceleração.
+
+Com base nessa análise, aplico melhorias específicas em cada ponto crítico, garantindo que o processo seja mais rápido, estável e escalável.
