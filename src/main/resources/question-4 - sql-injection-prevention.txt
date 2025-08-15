@@ -1,0 +1,16 @@
+Para evitar SQL Injection, é recomendadoseguir algumas boas práticas que ajudam a manter o banco de dados
+seguro e 'blindado'
+
+Algumas abordagens:
+
+- Consultas parametrizadas e uso de PreparedStatements:
+Evitam que dados do usuário sejam interpretados como parte da instrução SQL.
+
+- ORMs como TypeORM, Sequelize ou Hibernate:
+Facilitam o desenvolvimento e já vêm com proteção embutida contra injeção.
+
+- Validação e sanitização de entrada:
+Além de validar tipos e formatos, uso regex e padrões específicos para identificar e bloquear caracteres ilegais ou suspeitos.
+
+- Princípio do menor privilégio:
+Os usuários do banco têm acesso apenas ao que realmente precisam.

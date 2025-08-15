@@ -1,0 +1,103 @@
+Para evitar que seu código fique preso a uma biblioteca externa (que pode mudar no futuro),
+você pode usar o padrão Adapter.
+Ele cria uma “ponte” entre seu código e a biblioteca, usando uma interface própria.
+Assim, se trocar a biblioteca, só precisa mudar o adapter — o resto do sistema continua igual.
+
+Outro ponto relevante eh deixar a implementacao toda baseada nas interfaces, pois o 'miolo' pode mudar,
+mas a assinatura pode se manter a mesma reduzindo a necessidade de grande alteração.
+
+Vantagens:
+- Código mais flexível e fácil de manter
+- Facilita testes
+- Troca de biblioteca sem dor de cabeça
+
+Desvantagens:
+- Mais código para escrever
+- Precisa atualizar o adapter se quiser usar novas funções
+
+
+## 🧩 Exemplo
+
+Seu sistema REST chama um serviço de cadastro de usuários.
+Esse serviço é SOAP, mas você quer manter seu código REST desacoplado, caso troque o serviço no futuro.
+
+---
+
+## ✅ Passo 1: Interface REST interna
+
+```java
+public interface CadastroService {
+    void cadastrarUsuario(String nome, String email);
+}
+```
+
+---
+
+## 🔄 Passo 2: Adapter para o serviço SOAP
+
+```java
+public class SoapCadastroAdapter implements CadastroService {
+    private SoapCadastroClient soapClient = new SoapCadastroClient(); // cliente gerado via WSDL
+
+    @Override
+    public void cadastrarUsuario(String nome, String email) {
+        soapClient.enviarDados(nome, email); // método do serviço SOAP
+    }
+}
+```
+
+---
+
+## 🌐 Passo 3: Uso no controller REST
+
+```java
+@RestController
+public class UsuarioController {
+    private final CadastroService cadastroService;
+
+    public UsuarioController(CadastroService cadastroService) {
+        this.cadastroService = cadastroService;
+    }
+
+    @PostMapping("/usuarios")
+    public ResponseEntity<String> cadastrar(@RequestBody UsuarioDTO dto) {
+        cadastroService.cadastrarUsuario(dto.getNome(), dto.getEmail());
+        return ResponseEntity.ok("Usuário cadastrado com sucesso");
+    }
+}
+```
+
+---
+
+## 🧪 Injeção do Adapter
+
+```java
+@Configuration
+public class AppConfig {
+    @Bean
+    public CadastroService cadastroService() {
+        return new SoapCadastroAdapter(); // pode trocar por outro adapter no futuro
+    }
+}
+```
+
+---
+
+## 🔄 Trocar o serviço SOAP por REST? Só mudar o adapter:
+
+```java
+public class RestCadastroAdapter implements CadastroService {
+    private RestTemplate restTemplate = new RestTemplate();
+
+    @Override
+    public void cadastrarUsuario(String nome, String email) {
+        UsuarioDTO dto = new UsuarioDTO(nome, email);
+        restTemplate.postForEntity("https://api.exemplo.com/usuarios", dto, Void.class);
+    }
+}
+```
+
+---
+
+Com isso, seu controller REST continua igual, e você pode trocar o serviço externo
+sem mexer no restante do sistema.

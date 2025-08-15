@@ -1,0 +1,3 @@
+Trabalhei com Angular por alguns anos, principalmente entre as versões 8 e 12, em dois projetos relevantes: um sistema de controle bancário BackOffice e uma
+aplicação voltada para seguridade. Embora meu foco principal seja backend (aproximadamente 85% da minha atuação), participei da construção de
+interfaces, integração com APIs REST e organização de módulos e componentes.

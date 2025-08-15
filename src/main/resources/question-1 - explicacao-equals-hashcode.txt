@@ -1,0 +1,68 @@
+Em Java, sobrescrever o método `equals()` é importante quando você quer comparar se os objetos
+têm os mesmos dados (igualdade lógica), e não se são o mesmo na memória.
+Isso é essencial em coleções como `HashSet`, `HashMap` e `List`, onde a comparação afeta buscas, remoções e evitar duplicatas.
+
+Exemplo: Comparando Objetos `Pessoa`
+Imagine que você tem uma classe `Pessoa` com os atributos `nome` e `idade`. Por padrão, o método `equals()` em Java compara se dois objetos são **exatamente o mesmo na memória** — ou seja, se são o mesmo objeto. Mas às vezes você quer comparar se dois objetos **têm os mesmos dados**, mesmo que sejam objetos diferentes.
+
+Como sobrescrever `equals()` e `hashCode()`
+
+import java.util.Objects;
+
+public class Pessoa {
+    private String nome;
+    private int idade;
+
+    public Pessoa(String nome, int idade) {
+        this.nome = nome;
+        this.idade = idade;
+    }
+
+    // Compara se os dados são iguais
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true; // mesmo objeto
+        if (obj == null || getClass() != obj.getClass()) return false; // nulo ou classe diferente
+        Pessoa pessoa = (Pessoa) obj;
+        return idade == pessoa.idade && Objects.equals(nome, pessoa.nome);
+    }
+
+    // Gera um código baseado nos dados, usado em coleções como HashSet
+    @Override
+    public int hashCode() {
+        return Objects.hash(nome, idade);
+    }
+}
+
+Por que isso é importante?
+
+Sem sobrescrever `equals()`:
+
+Pessoa p1 = new Pessoa("Ana", 30);
+Pessoa p2 = new Pessoa("Ana", 30);
+System.out.println(p1.equals(p2)); // false (compara referências)
+
+
+Com sobrescrita:
+System.out.println(p1.equals(p2)); // true (compara o tipo e o estado do objeto para dizer se é o mesmo ou nao)
+
+
+E num HashSet:
+
+Set<Pessoa> pessoas = new HashSet<>();
+pessoas.add(p1);
+pessoas.add(p2); // não será adicionada se os dados forem iguais
+System.out.println(pessoas.size()); // 1
+
+
+## ⚠️ Regras importantes ao sobrescrever `equals()`
+- **Reflexiva**: `x.equals(x)` deve ser `true`
+- **Simétrica**: `x.equals(y)` deve ser igual a `y.equals(x)`
+- **Transitiva**: se `x.equals(y)` e `y.equals(z)`, então `x.equals(z)`
+- **Consistente**: o resultado não deve mudar com o tempo
+- **Não pode dar erro com `null`**: `x.equals(null)` deve ser `false`
+
+E o hashCode()?
+
+Se dois objetos são iguais com `equals()`, eles **devem ter o mesmo `hashCode()`**.
+Isso é essencial para funcionar corretamente em coleções como `HashMap` e `HashSet`.
