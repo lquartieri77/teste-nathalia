@@ -1,0 +1,52 @@
+. Returns the names of all Salesperson that don’t have any order with Samsonic.
+
+SELECT sp.name
+FROM salesperson sp
+WHERE sp.id NOT IN (
+    SELECT o.salesperson_id
+    FROM orders o
+    INNER JOIN customer c ON o.customer_id = c.id
+    WHERE c.name = 'Samsonic'
+);
+
+--Oracle
+SELECT sp.name
+FROM salesperson sp
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM orders o
+    INNER JOIN customer c ON o.customer_id = c.id
+    WHERE c.name = 'Samsonic'
+      AND o.salesperson_id = sp.id
+);
+
+. Updates the names of Salesperson that have 2 or more orders. It’s necessary to add an ‘*’ in the end of the name.
+
+UPDATE salesperson
+SET name = name || '*'
+WHERE id IN (
+    SELECT salesperson_id
+    FROM orders
+    GROUP BY salesperson_id
+    HAVING COUNT(*) >= 2
+);
+
+. Deletes all Ssalesperson that placed orders to the city of Jackson.
+
+DELETE FROM salesperson
+WHERE id IN (
+    SELECT o.salesperson_id
+    FROM orders o
+    JOIN customer c ON o.customer_id = c.id
+    WHERE c.city = 'Jackson'
+);
+
+
+. The total sales amount for each Salesperson. If the salesperson hasn’t sold anything, show zero.
+
+SELECT sp.id,
+       sp.name,
+       COALESCE(SUM(o.amount), 0) AS total_sales
+FROM salesperson sp
+LEFT JOIN orders o ON sp.id = o.salesperson_id
+GROUP BY sp.id, sp.name;
