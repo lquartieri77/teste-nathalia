@@ -1,0 +1,86 @@
+## 🧾 **História do Usuário – Gestão de Plantas (Fase 1)**
+
+**Título:** Admins e usuários autorizados gerenciam plantas no sistema XYZ.
+
+**Como** usuário autorizado,
+**Quero** criar, editar, buscar e (se admin) excluir plantas,
+**Para** manter dados precisos e únicos para futuras fases do sistema.
+
+---
+
+## ✅ **Critérios de Aceitação**
+
+- Criar planta com código numérico único e descrição opcional (até 10 caracteres).
+- Editar descrição de plantas existentes.
+- Buscar por código ou parte da descrição.
+- Apenas admins podem excluir plantas.
+- Códigos duplicados não são permitidos.
+- Todas as ações disponíveis via API REST, documentadas no Swagger com botão "Try it out".
+
+---
+
+## 📜 **Regras de Negócio**
+
+| Regra | Detalhes |
+|-------|----------|
+| Código único | Cada planta deve ter um código numérico exclusivo. |
+| Descrição | Opcional, com no máximo 10 caracteres. |
+| Exclusão | Somente admins podem excluir. |
+| Identificação de admin | Feita via cabeçalho `X-Admin` na API. |
+| Exclusão definitiva | Sem arquivamento ou exclusão lógica. |
+
+---
+
+## 🛡️ **Validações e Segurança**
+
+### 🔍 Validações
+- `code`: Obrigatório, numérico e único.
+- `description`: Opcional, até 10 caracteres.
+- Códigos repetidos geram erro claro.
+
+### 🔐 Segurança
+- Controle de acesso por papel: só admins podem excluir (via `X-Admin`).
+- Swagger exige `X-Admin` para deletar.
+- Erros:
+  - Ação não autorizada → `403 Forbidden`
+  - Dados inválidos → `400 Bad Request`
+
+---
+
+## 🧪 **Testes**
+
+### ✅ Funcionais
+- Criar planta válida.
+- Editar descrição.
+- Buscar por código ou descrição parcial.
+- Excluir como admin.
+- Tentar excluir como não-admin (espera-se erro 403).
+
+### ⚠️ Casos Limite
+
+| Cenário | Resultado Esperado |
+|--------|---------------------|
+| Código não numérico | Erro de validação |
+| Código duplicado | Erro de duplicação |
+| Descrição > 10 caracteres | Erro de validação |
+| Exclusão com `X-Admin: false` | Erro 403 |
+| Busca com descrição vazia | Retorna todas |
+| Atualizar planta inexistente | Erro 404 |
+| Excluir planta inexistente | Erro 404 |
+
+---
+
+## 🧪 Exemplo com cURL
+
+```bash
+# Criar planta duplicada
+curl -X POST http://localhost:8080/api/plants \
+  -H "Content-Type: application/json" \
+  -d '{"code": 101, "description": "Planta A"}'
+
+curl -X POST http://localhost:8080/api/plants \
+  -H "Content-Type: application/json" \
+  -d '{"code": 101, "description": "Planta B"}'
+# Esperado: 400 Bad Request – Código duplicado
+```
+
